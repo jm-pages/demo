@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>JuicyMania — Products</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple:#c9b8ff;
+    --purple-dark:#1a1024;
+    --text-dark:#141221;
+    --nav-text:rgba(255,255,255,.92);
+    --nav-text-dim:rgba(255,255,255,.62);
+    --card-bg:#ffffff;
+    --error:#e0432b;
+    --success:#2f9e5b;
+    --radius-pill:999px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:#0d1117;
+    color:#fff;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+
+  /* ---------- PAGE / VIDEO BACKGROUND (same system as the homepage) ---------- */
+  .page{
+    position:relative;
+    min-height:100svh;
+    width:100%;
+    overflow-x:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .bg-video-placeholder{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(190,205,215,.55), transparent 45%),
+      radial-gradient(circle at 80% 15%, rgba(150,170,185,.5), transparent 50%),
+      radial-gradient(circle at 50% 85%, rgba(120,140,160,.6), transparent 55%),
+      linear-gradient(180deg,#aebcc6 0%, #c3ccd3 40%, #9fadb8 100%);
+    background-size:200% 200%, 200% 200%, 200% 200%, 100% 100%;
+    animation: driftBg 22s ease-in-out infinite;
+    filter:saturate(0.95);
+  }
+  .bg-video-placeholder::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0px, rgba(255,255,255,.02) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode:overlay;
+    opacity:.5;
+  }
+  @keyframes driftBg{
+    0%{background-position:0% 0%, 100% 0%, 50% 100%, 0 0;}
+    50%{background-position:30% 20%, 70% 30%, 40% 70%, 0 0;}
+    100%{background-position:0% 0%, 100% 0%, 50% 100%, 0 0;}
+  }
+
+  .bg-video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:1;
+    display:block;
+  }
+
+  .page-overlay{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    background:linear-gradient(180deg, rgba(10,14,20,.35) 0%, rgba(10,14,20,.25) 30%, rgba(10,14,20,.4) 60%, rgba(8,10,14,.7) 100%);
+    pointer-events:none;
+  }
+
+  /* ---------- NAV (identical to homepage) ---------- */
+  .nav{
+    position:relative;
+    z-index:10;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px clamp(20px,4vw,64px);
+    width:100%;
+  }
+  .logo{
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    color:#fff;
+  }
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap:34px;
+    list-style:none;
+  }
+  .nav-links a{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:15px;
+    color:var(--nav-text);
+    font-weight:400;
+    white-space:nowrap;
+  }
+  .nav-links a.current{
+    color:#fff;
+    font-weight:600;
+  }
+  .nav-links .caret{
+    width:9px;height:9px;
+    border-right:1.5px solid currentColor;
+    border-bottom:1.5px solid currentColor;
+    transform:rotate(45deg) translateY(-2px);
+    opacity:.75;
+  }
+  .nav-right{
+    display:flex;
+    align-items:center;
+    gap:26px;
+  }
+  .nav-right a.plain{
+    font-size:15px;
+    color:var(--nav-text);
+  }
+  .btn-pill{
+    padding:11px 22px;
+    border-radius:var(--radius-pill);
+    font-size:15px;
+    font-weight:500;
+    background:var(--purple);
+    color:var(--text-dark);
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .btn-pill:hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 20px rgba(0,0,0,.18);
+  }
+
+  .hamburger{
+    display:none;
+    width:26px;height:26px;
+    position:relative;
+    z-index:20;
+  }
+  .hamburger span{
+    display:block;
+    position:absolute;
+    left:0;right:0;
+    height:2px;
+    background:#fff;
+    border-radius:2px;
+    transition:transform .25s ease, opacity .25s ease, top .25s ease;
+  }
+  .hamburger span:nth-child(1){top:6px;}
+  .hamburger span:nth-child(2){top:13px;}
+  .hamburger span:nth-child(3){top:20px;}
+  .hamburger.open span:nth-child(1){top:13px;transform:rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){top:13px;transform:rotate(-45deg);}
+
+  .mobile-menu{
+    position:fixed;
+    inset:0;
+    z-index:15;
+    background:rgba(13,17,23,.97);
+    backdrop-filter:blur(10px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:28px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .mobile-menu.open{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .mobile-menu a{
+    font-size:22px;
+    color:#fff;
+    font-weight:500;
+  }
+  .mobile-menu .btn-pill{
+    margin-top:10px;
+  }
+
+  /* ---------- PRODUCTS CONTENT ---------- */
+  .products-main{
+    position:relative;
+    z-index:5;
+    flex:1;
+    display:flex;
+    align-items:flex-start;
+    padding:10px clamp(20px,4vw,64px) 30px;
+  }
+  .products-grid{
+    width:100%;
+    max-width:1360px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+    gap:clamp(32px,5vw,72px);
+    align-items:stretch;
+  }
+
+  .eyebrow{
+    display:inline-block;
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,.68);
+    margin-bottom:18px;
+  }
+
+  .products-title{
+    font-size:clamp(34px,5vw,58px);
+    line-height:1.04;
+    letter-spacing:-0.03em;
+    font-weight:500;
+    margin-bottom:14px;
+  }
+  .products-title .w1{font-weight:600;color:#fff;}
+  .products-title .w2{font-weight:300;color:rgba(255,255,255,.92);}
+
+  .products-sub{
+    font-size:15.5px;
+    line-height:1.55;
+    color:rgba(255,255,255,.8);
+    max-width:440px;
+    margin-bottom:28px;
+  }
+
+  .countdown-label{
+    font-size:12px;
+    font-weight:600;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,.6);
+    margin-bottom:10px;
+  }
+  .countdown-digits{
+    display:flex;
+    gap:clamp(20px,4vw,40px);
+  }
+  .countdown-unit{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .countdown-unit .num{
+    font-size:clamp(30px,5vw,46px);
+    font-weight:600;
+    letter-spacing:-0.02em;
+    color:#fff;
+    font-variant-numeric:tabular-nums;
+  }
+  .countdown-unit .unit-label{
+    font-size:11.5px;
+    color:rgba(255,255,255,.58);
+    text-transform:uppercase;
+    letter-spacing:.08em;
+  }
+
+  /* ---------- FUNDING BAR (under the countdown) ---------- */
+  .funding-block{
+    margin-top:20px;
+    max-width:440px;
+  }
+  .funding-stats{
+    display:flex;
+    gap:26px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
+  }
+  .funding-unit{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  .funding-unit .num{
+    font-size:22px;
+    font-weight:600;
+    color:#fff;
+    font-variant-numeric:tabular-nums;
+  }
+  .funding-unit .unit-label{
+    font-size:11px;
+    color:rgba(255,255,255,.58);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+  .funding-bar{
+    width:100%;
+    height:6px;
+    border-radius:999px;
+    background:rgba(255,255,255,.16);
+    overflow:hidden;
+  }
+  .funding-bar-fill{
+    height:100%;
+    border-radius:999px;
+    background:linear-gradient(90deg, var(--purple), #8f7be0);
+  }
+
+  .products-right{
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    gap:10px;
+  }
+  .tier-eyebrow{
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,.68);
+    margin-bottom:6px;
+  }
+  .tier-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+  }
+  .tier-box{
+    display:block;
+    width:100%;
+    text-align:left;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(10px);
+    border-radius:14px;
+    padding:14px 16px;
+    transition:transform .18s ease, background .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .tier-box:hover{
+    background:rgba(255,255,255,.14);
+    border-color:rgba(255,255,255,.34);
+    transform:translateY(-2px);
+    box-shadow:0 14px 30px rgba(0,0,0,.22);
+  }
+  .tier-row{
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:5px;
+  }
+  .tier-name{
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,.85);
+  }
+  .tier-price{
+    font-size:17px;
+    font-weight:600;
+    color:#fff;
+    white-space:nowrap;
+  }
+  .tier-desc{
+    font-size:12.5px;
+    color:rgba(255,255,255,.68);
+    line-height:1.42;
+  }
+
+  .keys-intro{
+    font-size:13.5px;
+    line-height:1.5;
+    color:rgba(255,255,255,.78);
+    margin-bottom:14px;
+    max-width:480px;
+  }
+
+  /* ---------- SUPPORT ANY AMOUNT BOX ---------- */
+  .support-box{
+    max-width:440px;
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.16);
+    backdrop-filter:blur(10px);
+    border-radius:16px;
+    padding:18px;
+    margin-top:28px;
+  }
+  .support-box .tier-name{
+    display:block;
+    margin-bottom:4px;
+  }
+  .support-desc{
+    font-size:12.5px;
+    color:rgba(255,255,255,.68);
+    line-height:1.45;
+    margin-bottom:12px;
+  }
+  .amount-display{
+    font-size:26px;
+    font-weight:600;
+    color:#fff;
+    margin-bottom:10px;
+    font-variant-numeric:tabular-nums;
+  }
+  .amount-pills{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
+  }
+  .amount-pill{
+    padding:7px 13px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.28);
+    background:rgba(255,255,255,.06);
+    color:#fff;
+    font-size:12.5px;
+    font-weight:500;
+    transition:background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .amount-pill:hover:not(.active){
+    background:rgba(255,255,255,.16);
+  }
+  .amount-pill.active{
+    background:var(--purple);
+    border-color:var(--purple);
+    color:var(--text-dark);
+    font-weight:600;
+  }
+  .custom-amount-label{
+    font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:rgba(255,255,255,.5);
+    margin-bottom:6px;
+  }
+  .custom-amount-wrap{
+    margin-bottom:12px;
+  }
+  .custom-amount-wrap input{
+    width:100%;
+    padding:12px 14px;
+    border-radius:10px;
+    border:1.5px solid rgba(255,255,255,.26);
+    background:rgba(255,255,255,.07);
+    color:#fff;
+    font-size:15px;
+    font-family:inherit;
+    outline:none;
+    transition:border-color .18s ease, box-shadow .18s ease;
+  }
+  .custom-amount-wrap input::placeholder{
+    color:rgba(255,255,255,.45);
+  }
+  .custom-amount-wrap input:focus{
+    border-color:var(--purple);
+    box-shadow:0 0 0 4px rgba(201,184,255,.25);
+  }
+  .custom-amount-wrap input.invalid{
+    border-color:var(--error);
+  }
+  .btn-continue{
+    display:inline-block;
+    width:auto;
+    white-space:nowrap;
+    padding:7px 15px;
+    border-radius:999px;
+    background:var(--purple);
+    color:var(--text-dark);
+    font-size:12.5px;
+    font-weight:600;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .btn-continue:hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 20px rgba(0,0,0,.22);
+  }
+
+  /* ---------- MODAL (identical component to the homepage) ---------- */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:rgba(10,12,16,.6);
+    backdrop-filter:blur(6px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .25s ease, visibility .25s ease;
+  }
+  .modal-overlay.active{
+    opacity:1;
+    visibility:visible;
+  }
+  .modal-card{
+    width:100%;
+    max-width:420px;
+    background:var(--card-bg);
+    color:var(--text-dark);
+    border-radius:20px;
+    padding:36px 32px 32px;
+    position:relative;
+    transform:translateY(16px) scale(.98);
+    transition:transform .3s cubic-bezier(.2,.9,.25,1);
+    box-shadow:0 30px 80px rgba(0,0,0,.4);
+  }
+  .modal-overlay.active .modal-card{
+    transform:translateY(0) scale(1);
+  }
+  .modal-close{
+    position:absolute;
+    top:18px;
+    right:18px;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#f2f1f5;
+    color:#33313e;
+    font-size:18px;
+    line-height:1;
+    transition:background .18s ease;
+  }
+  .modal-close:hover{background:#e6e4ec;}
+
+  .modal-badge{
+    width:44px;height:44px;
+    border-radius:12px;
+    background:linear-gradient(135deg,var(--purple),#8f7be0);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:18px;
+  }
+  .modal-badge svg{width:22px;height:22px;color:#1a1024;}
+
+  .modal-price{
+    display:inline-block;
+    font-size:13px;
+    font-weight:600;
+    color:#6b5fb5;
+    background:#f1eeff;
+    padding:5px 12px;
+    border-radius:var(--radius-pill);
+    margin-bottom:14px;
+  }
+
+  .modal-card h2{
+    font-size:24px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin-bottom:8px;
+  }
+  .modal-card p.desc{
+    font-size:14.5px;
+    color:#66636f;
+    line-height:1.5;
+    margin-bottom:24px;
+  }
+
+  .field-label{
+    display:block;
+    font-size:13px;
+    font-weight:500;
+    color:#33313e;
+    margin-bottom:8px;
+  }
+  .field-wrap{
+    position:relative;
+    margin-bottom:6px;
+  }
+  .field-wrap input{
+    width:100%;
+    padding:13px 16px;
+    border-radius:12px;
+    border:1.5px solid #e2e0e8;
+    font-size:15px;
+    font-family:inherit;
+    color:var(--text-dark);
+    outline:none;
+    transition:border-color .18s ease, box-shadow .18s ease;
+    background:#fbfaff;
+  }
+  .field-wrap input:focus{
+    border-color:var(--purple);
+    box-shadow:0 0 0 4px rgba(201,184,255,.35);
+  }
+  .field-wrap input.invalid{
+    border-color:var(--error);
+  }
+  .field-wrap input.invalid:focus{
+    box-shadow:0 0 0 4px rgba(224,67,43,.15);
+  }
+
+  .error-msg{
+    font-size:13px;
+    color:var(--error);
+    min-height:18px;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    opacity:0;
+    transform:translateY(-4px);
+    transition:opacity .18s ease, transform .18s ease;
+  }
+  .error-msg.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  .btn-send{
+    width:100%;
+    padding:14px 20px;
+    border-radius:12px;
+    background:var(--text-dark);
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+    margin-top:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:background .18s ease, transform .18s ease;
+  }
+  .btn-send:hover{
+    background:#26223a;
+    transform:translateY(-1px);
+  }
+  .btn-send:active{
+    transform:translateY(0);
+  }
+
+  .success-state{
+    display:none;
+    text-align:center;
+    padding:8px 0 4px;
+  }
+  .success-state.show{
+    display:block;
+  }
+  .success-icon{
+    width:56px;height:56px;
+    border-radius:50%;
+    background:rgba(47,158,91,.12);
+    color:var(--success);
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 18px;
+  }
+  .success-icon svg{width:26px;height:26px;}
+  .success-state h2{font-size:20px;margin-bottom:8px;}
+  .success-state p{font-size:14.5px;color:#66636f;line-height:1.5;}
+
+  .form-body.hidden{display:none;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:900px){
+    .products-grid{
+      grid-template-columns:1fr;
+    }
+    .products-sub{max-width:100%;}
+  }
+  @media (max-width:640px){
+    .tier-grid{
+      grid-template-columns:1fr;
+    }
+  }
+  @media (max-width:860px){
+    .nav-links{display:none;}
+    .nav-right .plain{display:none;}
+    .nav-right .btn-pill{display:none;}
+    .hamburger{display:block;}
+  }
+  @media (max-width:480px){
+    .products-title{font-size:clamp(32px,10vw,44px);}
+    .countdown-digits{gap:18px;}
+    .funding-stats{gap:18px;}
+    .amount-pills{gap:6px;}
+    .amount-pill{padding:8px 14px;font-size:13px;}
+    .modal-card{padding:28px 22px 24px;border-radius:16px;}
+  }
+</style>
+</head>
+<body>
+
+<section class="page">
+
+  <div class="bg-video-placeholder" aria-hidden="true"></div>
+
+  <video class="bg-video" autoplay muted loop playsinline poster="">
+    <source src="background2a.mp4" type="video/mp4">
+  </video>
+
+  <div class="page-overlay"></div>
+
+  <nav class="nav">
+    <a href="jm-main.html" class="logo">JuicyMania</a>
+
+    <ul class="nav-links">
+      <li><a href="products.html">Exclusive</a></li>
+      <li><a href="#">Faq <span class="caret"></span></a></li>
+      <li><a href="#">Contact <span class="caret"></span></a></li>
+      <li><a href="#">Terms and Privacy <span class="caret"></span></a></li>
+    </ul>
+    <!--
+    <div class="nav-right">
+      <a href="#" class="plain">For Developers</a>
+      <a href="#" class="plain">Sign in</a>
+      <a href="#" class="btn-pill">Get started</a>
+    </div>
+-->
+    <button class="hamburger" id="hamburgerBtn" aria-label="open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="products.html">Exclusive</a>
+    <a href="#">Faq</a>
+    <a href="#">Contact</a>
+    <a href="#" class="btn-pill">Terms and Privacy</a>
+  </div>
+
+  <main class="products-main">
+    <div class="products-grid">
+
+      <div class="products-left">
+        <span class="eyebrow">Project 001</span>
+        <h1 class="products-title"><span class="w1">Clemence</span> <span class="w2">Audiard</span></h1>
+        <p class="products-sub"><b>
+          For the first time Clemnce opens a new chapter.</b><br>
+		  A Pirvate experience created around a real moment	 
+        </p>
+
+        <div class="countdown-label">Campaign closes in</div>
+        <div class="countdown-digits">
+          <div class="countdown-unit">
+            <span class="num" id="cdDays">40</span>
+            <span class="unit-label">Days</span>
+          </div>
+          <div class="countdown-unit">
+            <span class="num" id="cdHours">24</span>
+            <span class="unit-label">Hours</span>
+          </div>
+          <div class="countdown-unit">
+            <span class="num" id="cdMinutes">59</span>
+            <span class="unit-label">Minutes</span>
+          </div>
+        </div>
+
+        <div class="funding-block">
+          <div class="funding-stats">
+            <div class="funding-unit">
+              <span class="num" id="fundPercent">70%</span>
+              <span class="unit-label">Funded</span>
+            </div>
+            <div class="funding-unit">
+              <span class="num" id="fundParticipants">312</span>
+              <span class="unit-label">Participants</span>
+            </div>
+            <div class="funding-unit">
+              <span class="num" id="fundAmount">$28,000</span>
+              <span class="unit-label">of $40,000</span>
+            </div>
+          </div>
+          <div class="funding-bar">
+            <div class="funding-bar-fill" id="fundBarFill" style="width:70%"></div>
+          </div>
+        </div>
+		
+        <div class="support-box">
+          <span class="tier-name">Support Any Amount</span>
+          <p class="support-desc">Any contribution helps fund this project. Choose a preset amount or enter your own.</p>
+
+          <div class="amount-display" id="amountDisplay">$50</div>
+
+          <div class="amount-pills">
+            <button type="button" class="amount-pill" data-amount="25">$25</button>
+            <button type="button" class="amount-pill active" data-amount="50">$50</button>
+            <button type="button" class="amount-pill" data-amount="100">$100</button>
+            <button type="button" class="amount-pill" data-amount="250">$250</button>
+ <button type="button" class="btn-continue" id="continueBtn">Support me</button>
+          </div>
+
+
+        </div>
+		
+      </div>
+
+      <div class="products-right">
+        <p class="keys-intro">Every Access Key opens a different part of this project. Choose how close you want to be to the story. Created once. Never repeated.</p>
+
+        <span class="tier-eyebrow"><b>Access Keys</b></span>
+
+        <div class="tier-grid">
+        <button class="tier-box" type="button"
+          data-name="Behind the Scenes Key"
+          data-price="$200"
+          data-desc="Behind-the-scenes photos and video moments from the shoot.">
+          <div class="tier-row">
+            <span class="tier-name">Behind the Scenes Key</span>
+            <span class="tier-price">$200</span>
+          </div>
+          <div class="tier-desc">Behind-the-scenes photos and video moments from the shoot.</div>
+        </button>
+
+        <button class="tier-box" type="button"
+          data-name="Signed Item Key"
+          data-price="$350"
+          data-desc="A signed photo or poster from the project. Limited collectible.">
+          <div class="tier-row">
+            <span class="tier-name">Signed Item Key</span>
+            <span class="tier-price">$350</span>
+          </div>
+          <div class="tier-desc">A signed photo or poster from the project. Limited collectible.</div>
+        </button>
+
+        <button class="tier-box" type="button"
+          data-name="First Access Key"
+          data-price="$400"
+          data-desc="Watch the finished film before everyone else, with private updates along the way.">
+          <div class="tier-row">
+            <span class="tier-name">First Access Key</span>
+            <span class="tier-price">$400</span>
+          </div>
+          <div class="tier-desc">Watch the finished film before everyone else, with private updates along the way.</div>
+        </button>
+
+        <button class="tier-box" type="button"
+          data-name="Keepsake Key"
+          data-price="$950"
+          data-desc="A selected prop or wardrobe piece from the shoot. Choose the option in the next step.">
+          <div class="tier-row">
+            <span class="tier-name">Keepsake Key</span>
+            <span class="tier-price">$950</span>
+          </div>
+          <div class="tier-desc">A selected prop or wardrobe piece from the shoot. Choose the option in the next step.</div>
+        </button>
+
+        <button class="tier-box" type="button"
+          data-name="Private Moment Key"
+          data-price="$2,000"
+          data-desc="A private video call with the team. Very limited availability.">
+          <div class="tier-row">
+            <span class="tier-name">Private Moment Key</span>
+            <span class="tier-price">$1,000</span>
+          </div>
+          <div class="tier-desc">A private video call with the team. Very limited availability.</div>
+        </button>
+  
+  
+  
+  <button class="tier-box" type="button"
+    data-name="Private Moment Key"
+    data-price="$1,000"
+    data-desc="A private video call with the team. Very limited availability.">
+    <div class="tier-row">
+      <span class="tier-name">Private Moment Key</span>
+      <span class="tier-price">$2,000</span>
+    </div>
+    <div class="tier-desc">A private video call with the team. Very limited availability.</div>
+  </button>
+  
+  
+  
+  
+        </div>
+
+   
+   
+   
+   
+      </div>
+
+    </div>
+  </main>
+</section>
+
+<!-- ---------- MODAL / LAYER (same style as the homepage email layer) ---------- -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-card">
+    <button class="modal-close" id="modalCloseBtn" aria-label="Bezárás">&times;</button>
+
+    <div id="formView" class="form-body">
+      <span class="modal-price" id="modalPrice">Free</span>
+      <h2 id="modalTitle">Request access — Starter Key</h2>
+      <p class="desc" id="modalDesc">Add your email and we'll notify you as soon as this plan opens up.</p>
+
+      <button type="button" class="btn-send" id="modalContinueBtn">Continue</button>
+    </div>
+
+    <div class="success-state" id="successView">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <h2>You're on the list</h2>
+      <p id="successDesc">We'll email you as soon as this plan opens up.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---- mobile menu ----
+  var hamburger = document.getElementById('hamburgerBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', function(){
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+  mobileMenu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    });
+  });
+
+  // ---- countdown ----
+  // TODO: set this to your real early-access deadline (ISO date/time, UTC).
+  var target = new Date("2026-10-29T12:40:00Z");
+
+  var cdDays = document.getElementById('cdDays');
+  var cdHours = document.getElementById('cdHours');
+  var cdMinutes = document.getElementById('cdMinutes');
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function updateCountdown(){
+    var diff = target.getTime() - Date.now();
+    if(diff < 0) diff = 0;
+    var totalMinutes = Math.floor(diff / 60000);
+    var days = Math.floor(totalMinutes / (60*24));
+    var hours = Math.floor((totalMinutes % (60*24)) / 60);
+    var minutes = totalMinutes % 60;
+    cdDays.textContent = pad(days);
+    cdHours.textContent = pad(hours);
+    cdMinutes.textContent = pad(minutes);
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 15000);
+
+  // ---- tier boxes -> modal ----
+  var overlay = document.getElementById('modalOverlay');
+  var closeBtn = document.getElementById('modalCloseBtn');
+  var formView = document.getElementById('formView');
+  var successView = document.getElementById('successView');
+  var modalTitle = document.getElementById('modalTitle');
+  var modalDesc = document.getElementById('modalDesc');
+  var modalPrice = document.getElementById('modalPrice');
+  var successDesc = document.getElementById('successDesc');
+
+  function openModal(title, price, desc, successText){
+    modalTitle.textContent = title;
+    modalPrice.textContent = price;
+    modalDesc.textContent = desc;
+    successDesc.textContent = successText;
+
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    resetModal();
+  }
+
+  function closeModal(){
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function resetModal(){
+    formView.classList.remove('hidden');
+    successView.classList.remove('show');
+  }
+
+  document.querySelectorAll('.tier-box').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var name = btn.getAttribute('data-name');
+      openModal(
+        'Request access — ' + name,
+        btn.getAttribute('data-price'),
+        btn.getAttribute('data-desc'),
+        "We'll email you as soon as the " + name + ' plan opens up.'
+      );
+    });
+  });
+
+  // ---- support any amount ----
+  var amountPills = document.querySelectorAll('.amount-pill');
+  var amountDisplay = document.getElementById('amountDisplay');
+  var continueBtn = document.getElementById('continueBtn');
+  var selectedAmount = 50;
+
+  function formatAmount(n){
+    n = Math.max(0, Math.round(Number(n) || 0));
+    return '$' + n.toLocaleString('en-US');
+  }
+
+  function setAmount(n){
+    selectedAmount = Number(n) || 0;
+    amountDisplay.textContent = formatAmount(selectedAmount);
+    amountPills.forEach(function(p){
+      p.classList.toggle('active', Number(p.getAttribute('data-amount')) === selectedAmount);
+    });
+  }
+
+  amountPills.forEach(function(p){
+    p.addEventListener('click', function(){
+      setAmount(p.getAttribute('data-amount'));
+    });
+  });
+
+  continueBtn.addEventListener('click', function(){
+    var amountText = formatAmount(selectedAmount);
+    openModal(
+      'Thank You',
+      amountText,
+      'In the live version, this step will redirect to payment confirmation.',
+      "Thanks for your support — we'll be in touch by email."
+    );
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay){ closeModal(); }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && overlay.classList.contains('active')){ closeModal(); }
+  });
+})();
+</script>
+
+</body>
+</html>

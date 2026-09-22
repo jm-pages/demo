@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>JuicyMania — Exclusive Scenes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --purple:#c9b8ff;
+    --purple-dark:#1a1024;
+    --text-dark:#141221;
+    --nav-text:rgba(255,255,255,.92);
+    --nav-text-dim:rgba(255,255,255,.62);
+    --card-bg:#ffffff;
+    --error:#e0432b;
+    --success:#2f9e5b;
+    --radius-pill:999px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:#0d1117;
+    color:#fff;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;}
+
+  /* ---------- HERO / VIDEO BACKGROUND ---------- */
+  .hero{
+    position:relative;
+    min-height:100svh;
+    width:100%;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+ 
+  .bg-video-placeholder{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(190,205,215,.55), transparent 45%),
+      radial-gradient(circle at 80% 15%, rgba(150,170,185,.5), transparent 50%),
+      radial-gradient(circle at 50% 85%, rgba(120,140,160,.6), transparent 55%),
+      linear-gradient(180deg,#aebcc6 0%, #c3ccd3 40%, #9fadb8 100%);
+    background-size:200% 200%, 200% 200%, 200% 200%, 100% 100%;
+    animation: driftBg 22s ease-in-out infinite;
+    filter:saturate(0.95);
+  }
+  .bg-video-placeholder::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0px, rgba(255,255,255,.02) 1px, transparent 1px, transparent 3px);
+    mix-blend-mode:overlay;
+    opacity:.5;
+  }
+  @keyframes driftBg{
+    0%{background-position:0% 0%, 100% 0%, 50% 100%, 0 0;}
+    50%{background-position:30% 20%, 70% 30%, 40% 70%, 0 0;}
+    100%{background-position:0% 0%, 100% 0%, 50% 100%, 0 0;}
+  }
+
+ 
+  .bg-video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:1;
+    display:block;
+  }
+
+  .hero-overlay{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    background:linear-gradient(180deg, rgba(10,14,20,.15) 0%, rgba(10,14,20,0) 30%, rgba(10,14,20,.1) 60%, rgba(8,10,14,.55) 100%);
+    pointer-events:none;
+  }
+
+  /* ---------- NAV ---------- */
+  .nav{
+    position:relative;
+    z-index:10;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px clamp(20px,4vw,64px);
+    width:100%;
+  }
+  .logo{
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    color:#fff;
+  }
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap:34px;
+    list-style:none;
+  }
+  .nav-links a{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:15px;
+    color:var(--nav-text);
+    font-weight:400;
+    white-space:nowrap;
+  }
+  .nav-links .caret{
+    width:9px;height:9px;
+    border-right:1.5px solid currentColor;
+    border-bottom:1.5px solid currentColor;
+    transform:rotate(45deg) translateY(-2px);
+    opacity:.75;
+  }
+  .nav-right{
+    display:flex;
+    align-items:center;
+    gap:26px;
+  }
+  .nav-right a.plain{
+    font-size:15px;
+    color:var(--nav-text);
+  }
+  .btn-pill{
+    padding:11px 22px;
+    border-radius:var(--radius-pill);
+    font-size:15px;
+    font-weight:500;
+    background:var(--purple);
+    color:var(--text-dark);
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .btn-pill:hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 20px rgba(0,0,0,.18);
+  }
+
+  .hamburger{
+    display:none;
+    width:26px;height:26px;
+    position:relative;
+    z-index:20;
+  }
+  .hamburger span{
+    display:block;
+    position:absolute;
+    left:0;right:0;
+    height:2px;
+    background:#fff;
+    border-radius:2px;
+    transition:transform .25s ease, opacity .25s ease, top .25s ease;
+  }
+  .hamburger span:nth-child(1){top:6px;}
+  .hamburger span:nth-child(2){top:13px;}
+  .hamburger span:nth-child(3){top:20px;}
+  .hamburger.open span:nth-child(1){top:13px;transform:rotate(45deg);}
+  .hamburger.open span:nth-child(2){opacity:0;}
+  .hamburger.open span:nth-child(3){top:13px;transform:rotate(-45deg);}
+
+  .mobile-menu{
+    position:fixed;
+    inset:0;
+    z-index:15;
+    background:rgba(13,17,23,.97);
+    backdrop-filter:blur(10px);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:28px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .mobile-menu.open{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .mobile-menu a{
+    font-size:22px;
+    color:#fff;
+    font-weight:500;
+  }
+  .mobile-menu .btn-pill{
+    margin-top:10px;
+  }
+
+  /* ---------- HERO CONTENT ---------- */
+  .hero-content{
+    position:relative;
+    z-index:5;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:0 24px;
+    gap:28px;
+  }
+  .headline{
+    font-size:clamp(40px, 9vw, 96px);
+    line-height:1.02;
+    letter-spacing:-0.03em;
+    font-weight:500;
+  }
+  .headline .w1{font-weight:600;color:#fff;}
+  .headline .w2{font-weight:300;color:rgba(255,255,255,.92);}
+
+  .cta-request{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 30px;
+    border-radius:var(--radius-pill);
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.55);
+    backdrop-filter:blur(6px);
+    color:#fff;
+    font-size:16px;
+    font-weight:500;
+    letter-spacing:.01em;
+    transition:transform .2s ease, background .2s ease, box-shadow .2s ease;
+  }
+  .cta-request:hover{
+    background:rgba(255,255,255,.22);
+    transform:translateY(-2px);
+    box-shadow:0 10px 28px rgba(0,0,0,.25);
+  }
+  .cta-request svg{width:16px;height:16px;flex-shrink:0;}
+
+  .tagline{
+    position:absolute;
+    left:clamp(20px,4vw,64px);
+    bottom:clamp(24px,5vh,56px);
+    z-index:5;
+    font-size:17px;
+    color:rgba(255,255,255,.88);
+    font-weight:400;
+  }
+
+  /* ---------- MODAL ---------- */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    background:rgba(10,12,16,.6);
+    backdrop-filter:blur(6px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    opacity:0;
+    visibility:hidden;
+    transition:opacity .25s ease, visibility .25s ease;
+  }
+  .modal-overlay.active{
+    opacity:1;
+    visibility:visible;
+  }
+  .modal-card{
+    width:100%;
+    max-width:420px;
+    background:var(--card-bg);
+    color:var(--text-dark);
+    border-radius:20px;
+    padding:36px 32px 32px;
+    position:relative;
+    transform:translateY(16px) scale(.98);
+    transition:transform .3s cubic-bezier(.2,.9,.25,1);
+    box-shadow:0 30px 80px rgba(0,0,0,.4);
+  }
+  .modal-overlay.active .modal-card{
+    transform:translateY(0) scale(1);
+  }
+  .modal-close{
+    position:absolute;
+    top:18px;
+    right:18px;
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#f2f1f5;
+    color:#33313e;
+    font-size:18px;
+    line-height:1;
+    transition:background .18s ease;
+  }
+  .modal-close:hover{background:#e6e4ec;}
+
+  .modal-badge{
+    width:44px;height:44px;
+    border-radius:12px;
+    background:linear-gradient(135deg,var(--purple),#8f7be0);
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:18px;
+  }
+  .modal-badge svg{width:22px;height:22px;color:#1a1024;}
+
+  .modal-card h2{
+    font-size:24px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin-bottom:8px;
+  }
+  .modal-card p.desc{
+    font-size:14.5px;
+    color:#66636f;
+    line-height:1.5;
+    margin-bottom:24px;
+  }
+
+  .field-label{
+    display:block;
+    font-size:13px;
+    font-weight:500;
+    color:#33313e;
+    margin-bottom:8px;
+  }
+  .field-wrap{
+    position:relative;
+    margin-bottom:6px;
+  }
+  .field-wrap input{
+    width:100%;
+    padding:13px 16px;
+    border-radius:12px;
+    border:1.5px solid #e2e0e8;
+    font-size:15px;
+    font-family:inherit;
+    color:var(--text-dark);
+    outline:none;
+    transition:border-color .18s ease, box-shadow .18s ease;
+    background:#fbfaff;
+  }
+  .field-wrap input:focus{
+    border-color:var(--purple);
+    box-shadow:0 0 0 4px rgba(201,184,255,.35);
+  }
+  .field-wrap input.invalid{
+    border-color:var(--error);
+  }
+  .field-wrap input.invalid:focus{
+    box-shadow:0 0 0 4px rgba(224,67,43,.15);
+  }
+
+  .error-msg{
+    font-size:13px;
+    color:var(--error);
+    min-height:18px;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    opacity:0;
+    transform:translateY(-4px);
+    transition:opacity .18s ease, transform .18s ease;
+  }
+  .error-msg.show{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+  .btn-send{
+    width:100%;
+    padding:14px 20px;
+    border-radius:12px;
+    background:var(--text-dark);
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+    margin-top:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:background .18s ease, transform .18s ease;
+  }
+  .btn-send:hover{
+    background:#26223a;
+    transform:translateY(-1px);
+  }
+  .btn-send:active{
+    transform:translateY(0);
+  }
+
+  .success-state{
+    display:none;
+    text-align:center;
+    padding:8px 0 4px;
+  }
+  .success-state.show{
+    display:block;
+  }
+  .success-icon{
+    width:56px;height:56px;
+    border-radius:50%;
+    background:rgba(47,158,91,.12);
+    color:var(--success);
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 18px;
+  }
+  .success-icon svg{width:26px;height:26px;}
+  .success-state h2{font-size:20px;margin-bottom:8px;}
+  .success-state p{font-size:14.5px;color:#66636f;line-height:1.5;}
+
+  .form-body{transition:opacity .2s ease;}
+  .form-body.hidden{display:none;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:860px){
+    .nav-links{display:none;}
+    .nav-right .plain{display:none;}
+    .nav-right .btn-pill{display:none;}
+    .hamburger{display:block;}
+  }
+  @media (max-width:480px){
+    .headline{font-size:clamp(34px,11vw,54px);}
+    .cta-request{padding:13px 24px;font-size:15px;}
+    .tagline{font-size:15px;}
+    .modal-card{padding:28px 22px 24px;border-radius:16px;}
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+
+  <div class="bg-video-placeholder" aria-hidden="true"></div>
+
+  <video class="bg-video" autoplay muted loop playsinline poster="">
+    <source src="background.mp4" type="video/mp4">
+  </video>
+
+  <div class="hero-overlay"></div>
+
+  <nav class="nav">
+    <a href="jm-main.html" class="logo">JuicyMania</a>
+
+    <ul class="nav-links">
+      <li><a href="products.html">Exclusive</a></li>
+      <li><a href="#">Faq <span class="caret"></span></a></li>
+      <li><a href="#">Contact <span class="caret"></span></a></li>
+      <li><a href="#">Terms and Privacy <span class="caret"></span></a></li>
+
+    </ul>
+
+    <!--
+
+    <div class="nav-right">
+      <a href="#" class="plain">For Developers</a>
+      <a href="#" class="plain">Sign in</a>
+      <a href="#" class="btn-pill">Get started</a>
+    </div>
+-->
+    <button class="hamburger" id="hamburgerBtn" aria-label="open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="products.html">Exclusive</a>
+    <a href="#">Faq</a>
+    <a href="#" class="btn-pill">Contact</a>
+    <a href="#">Terms and Privacy</a>
+
+  </div>
+
+  <div class="hero-content">
+    <h1 class="headline"><span class="w1">Clemence Audiard</span> <span class="w2"><br>Exclusive Scenes</span></h1>
+
+    <button class="cta-request" id="openModalBtn">
+      Request Access
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <div class="tagline">Created once. Never repeated.</div>
+</section>
+
+<!-- ---------- MODAL / LAYER ---------- -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-card">
+    <button class="modal-close" id="modalCloseBtn" aria-label="Bezárás">&times;</button>
+
+    <div id="formView">
+<!--      <div class="modal-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      </div>-->
+      <h2>Request access</h2>
+      <p class="desc"><b>THIS SCENE DOES
+NOT EXIST YET.</b>
+      <br>
+<br>
+No studio commissioned it.
+      <br>
+
+No platform ordered it.
+      <br>
+
+No one paid for it.      <br><br>
+<b>
+YOU DECIDE WHETHER IT HAPPENS  </b>    <br>
+      <br>
+
+		  Add your email address and we'll let you know as soon as Clemence is ready for you.</p>
+
+      <form id="requestForm" novalidate>
+        <label class="field-label" for="emailInput">Email address</label>
+        <div class="field-wrap">
+          <input type="email" id="emailInput" name="email" placeholder="you@company.com" autocomplete="email">
+        </div>
+        <div class="error-msg" id="errorMsg">Please enter a valid email address.</div>
+
+        <button type="submit" class="btn-send">
+          Send
+        </button>
+      </form>
+    </div>
+
+    <div class="success-state" id="successView">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <h2>You're on the list</h2>
+      <p>We'll email you as soon as access opens up.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---- mobile menu ----
+  var hamburger = document.getElementById('hamburgerBtn');
+  var mobileMenu = document.getElementById('mobileMenu');
+  hamburger.addEventListener('click', function(){
+    hamburger.classList.toggle('open');
+    mobileMenu.classList.toggle('open');
+  });
+  mobileMenu.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+    });
+  });
+
+  // ---- modal ----
+  var openBtn = document.getElementById('openModalBtn');
+  var overlay = document.getElementById('modalOverlay');
+  var closeBtn = document.getElementById('modalCloseBtn');
+  var form = document.getElementById('requestForm');
+  var emailInput = document.getElementById('emailInput');
+  var errorMsg = document.getElementById('errorMsg');
+  var formView = document.getElementById('formView');
+  var successView = document.getElementById('successView');
+
+  var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function openModal(){
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    resetModal();
+    setTimeout(function(){ emailInput.focus(); }, 200);
+  }
+
+  function closeModal(){
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function resetModal(){
+    formView.classList.remove('hidden');
+    successView.classList.remove('show');
+    form.reset();
+    emailInput.classList.remove('invalid');
+    errorMsg.classList.remove('show');
+  }
+
+  function validateEmail(value){
+    return emailPattern.test(value.trim());
+  }
+
+  openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+
+  overlay.addEventListener('click', function(e){
+    if(e.target === overlay){ closeModal(); }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && overlay.classList.contains('active')){ closeModal(); }
+  });
+
+  emailInput.addEventListener('input', function(){
+    if(emailInput.classList.contains('invalid') && validateEmail(emailInput.value)){
+      emailInput.classList.remove('invalid');
+      errorMsg.classList.remove('show');
+    }
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var value = emailInput.value.trim();
+
+    if(!validateEmail(value)){
+      emailInput.classList.add('invalid');
+      errorMsg.classList.add('show');
+      emailInput.focus();
+      return;
+    }
+
+    emailInput.classList.remove('invalid');
+    errorMsg.classList.remove('show');
+
+    // NOTE: no backend is wired up — this only simulates a successful submission.
+    // Replace this block with your real request (fetch/AJAX call to your API).
+    formView.classList.add('hidden');
+    successView.classList.add('show');
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -818,6 +818,7 @@
         <button class="tier-box" type="button"
           data-name="Behind the Scenes Key"
           data-price="$200"
+          data-amount="200"
           data-desc="Behind-the-scenes photos and video moments from the shoot.">
           <div class="tier-row">
             <span class="tier-name">Behind the Scenes Key</span>
@@ -829,6 +830,7 @@
         <button class="tier-box" type="button"
           data-name="Signed Item Key"
           data-price="$350"
+          data-amount="350"
           data-desc="A signed photo or poster from the project. Limited collectible.">
           <div class="tier-row">
             <span class="tier-name">Signed Item Key</span>
@@ -840,6 +842,7 @@
         <button class="tier-box" type="button"
           data-name="First Access Key"
           data-price="$400"
+          data-amount="400"
           data-desc="Watch the finished film before everyone else, with private updates along the way.">
           <div class="tier-row">
             <span class="tier-name">First Access Key</span>
@@ -851,6 +854,7 @@
         <button class="tier-box" type="button"
           data-name="Keepsake Key"
           data-price="$950"
+          data-amount="950"
           data-desc="A selected prop or wardrobe piece from the shoot. Choose the option in the next step.">
           <div class="tier-row">
             <span class="tier-name">Keepsake Key</span>
@@ -861,7 +865,8 @@
 
         <button class="tier-box" type="button"
           data-name="Private Moment Key"
-          data-price="$2,000"
+          data-price="$1,000"
+          data-amount="1000"
           data-desc="A private video call with the team. Very limited availability.">
           <div class="tier-row">
             <span class="tier-name">Private Moment Key</span>
@@ -874,7 +879,8 @@
   
   <button class="tier-box" type="button"
     data-name="Private Moment Key"
-    data-price="$1,000"
+    data-price="$2,000"
+    data-amount="2000"
     data-desc="A private video call with the team. Very limited availability.">
     <div class="tier-row">
       <span class="tier-name">Private Moment Key</span>
@@ -922,6 +928,37 @@
 </div>
 
 <script>
+// =====================================================================
+//  STRIPE PAYMENT LINKS
+//  Paste each Payment Link URL from the Stripe Dashboard below
+//  (Product catalog -> product -> price -> "Create payment link").
+//  Test mode links start with https://buy.stripe.com/test_...
+//  After payment, set the link to redirect to: <your-site>/products.html?paid=1
+// =====================================================================
+var STRIPE_LINKS = {
+  // Support Any Amount ("Support me" button)
+  25:   'https://buy.stripe.com/test_REPLACE_25',
+  50:   'https://buy.stripe.com/test_REPLACE_50',
+  100:  'https://buy.stripe.com/test_REPLACE_100',
+  250:  'https://buy.stripe.com/test_REPLACE_250',
+  // Access Keys ("Continue" button in the layer)
+  200:  'https://buy.stripe.com/test_REPLACE_200',   // Behind the Scenes Key
+  350:  'https://buy.stripe.com/test_REPLACE_350',   // Signed Item Key
+  400:  'https://buy.stripe.com/test_REPLACE_400',   // First Access Key
+  950:  'https://buy.stripe.com/test_REPLACE_950',   // Keepsake Key
+  1000: 'https://buy.stripe.com/test_REPLACE_1000',  // Private Moment Key
+  2000: 'https://buy.stripe.com/test_9B63cnbtQ2c35pgdzmcjS00'   // Private Moment Key
+};
+
+function goToStripe(amount){
+  var url = STRIPE_LINKS[amount];
+  if(!url || url.indexOf('REPLACE') !== -1){
+    alert('Payment link for $' + amount + ' is not configured yet.');
+    return;
+  }
+  window.location.href = url;
+}
+
 (function(){
   // ---- mobile menu ----
   var hamburger = document.getElementById('hamburgerBtn');
@@ -970,6 +1007,8 @@
   var modalDesc = document.getElementById('modalDesc');
   var modalPrice = document.getElementById('modalPrice');
   var successDesc = document.getElementById('successDesc');
+  var modalContinueBtn = document.getElementById('modalContinueBtn');
+  var modalAmount = null;
 
   function openModal(title, price, desc, successText){
     modalTitle.textContent = title;
@@ -996,11 +1035,12 @@
     btn.addEventListener('click', function(){
       var name = btn.getAttribute('data-name');
       openModal(
-        'Request access — ' + name,
+        name,
         btn.getAttribute('data-price'),
-        btn.getAttribute('data-desc'),
-        "We'll email you as soon as the " + name + ' plan opens up.'
+        btn.getAttribute('data-desc') + ' You will be redirected to secure checkout (Stripe).',
+        'Thank you! Your payment was successful.'
       );
+      modalAmount = Number(btn.getAttribute('data-amount'));
     });
   });
 
@@ -1029,15 +1069,24 @@
     });
   });
 
+  // "Support me" -> straight to Stripe Checkout for the selected amount
   continueBtn.addEventListener('click', function(){
-    var amountText = formatAmount(selectedAmount);
-    openModal(
-      'Thank You',
-      amountText,
-      'In the live version, this step will redirect to payment confirmation.',
-      "Thanks for your support — we'll be in touch by email."
-    );
+    goToStripe(selectedAmount);
   });
+
+  // "Continue" in the layer -> Stripe Checkout for the chosen Access Key
+  modalContinueBtn.addEventListener('click', function(){
+    if(modalAmount){ goToStripe(modalAmount); }
+  });
+
+  // Back from Stripe with ?paid=1 -> show the success layer
+  if(/[?&]paid=1/.test(window.location.search)){
+    openModal('', '', '', 'Thank you! Your payment was successful. A receipt is on its way to your email.');
+    formView.classList.add('hidden');
+    successView.classList.add('show');
+    successView.querySelector('h2').textContent = 'Payment received';
+    history.replaceState(null, '', window.location.pathname);
+  }
 
   closeBtn.addEventListener('click', closeModal);
 

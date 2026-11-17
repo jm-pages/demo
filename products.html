@@ -997,6 +997,39 @@ function goToStripe(amount){
   updateCountdown();
   setInterval(updateCountdown, 15000);
 
+  // ---- funding stats (live from Stripe via the stats endpoint) ----
+  // STATS_URL: stats.json is refreshed from Stripe by the GitHub Action
+  // (.github/workflows/stripe-stats.yml). Leave '' to show only the base values.
+  var STATS_URL = 'stats.json';
+  var FUND_GOAL = 40000;          // "of $40,000"
+  var BASE_PARTICIPANTS = 312;    // starting values shown before any Stripe payment
+  var BASE_AMOUNT = 28000;        // (set both to 0 to count real payments only)
+
+  var fundPercent = document.getElementById('fundPercent');
+  var fundParticipants = document.getElementById('fundParticipants');
+  var fundAmount = document.getElementById('fundAmount');
+  var fundBarFill = document.getElementById('fundBarFill');
+
+  function renderFunding(participants, amount){
+    var pct = FUND_GOAL > 0 ? Math.floor(amount / FUND_GOAL * 100) : 0;
+    fundParticipants.textContent = participants.toLocaleString('en-US');
+    fundAmount.textContent = '$' + Math.round(amount).toLocaleString('en-US');
+    fundPercent.textContent = pct + '%';
+    fundBarFill.style.width = Math.min(pct, 100) + '%';
+  }
+
+  renderFunding(BASE_PARTICIPANTS, BASE_AMOUNT);
+
+  if(STATS_URL){
+    fetch(STATS_URL + '?t=' + Date.now(), { cache: 'no-store' })
+      .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(d){
+        renderFunding(BASE_PARTICIPANTS + (Number(d.participants) || 0),
+                      BASE_AMOUNT + (Number(d.amount) || 0));
+      })
+      .catch(function(e){ console.warn('Funding stats unavailable:', e); });
+  }
+
   // ---- tier boxes -> modal ----
   var overlay = document.getElementById('modalOverlay');
   var closeBtn = document.getElementById('modalCloseBtn');
